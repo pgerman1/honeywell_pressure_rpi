@@ -10,7 +10,7 @@ Address = 0x28
 Bus = /dev/i2c-1
 Pressure Span = 0-100 mBar
 Min ADC counts = ADC_MIN_COUNTS
-Max ADC counts = 0x3999
+Max ADC counts = ADC_MAX_COUNTS
 -----------------------------------
 Args: I2C Bus Number
 Returns: New Pressure Sensor Object
@@ -20,7 +20,7 @@ Pressure::Pressure(){
 	setBus(1);
 	setAddress(DEFAULT_ADDRESS);
 	setSpan(0,100);
-	setCounts(ADC_MIN_COUNTS,0x3999);
+	setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 	getFd();
 }
 
@@ -32,7 +32,7 @@ Address = 0x28
 Bus = user defined
 Pressure Span = 0-100 mBar
 Min ADC counts = ADC_MIN_COUNTS
-Max ADC counts = 0x3999
+Max ADC counts = ADC_MAX_COUNTS
 -----------------------------------
 Args: I2C Bus Number
 Returns: New Pressure Sensor Object
@@ -42,7 +42,7 @@ Pressure::Pressure(int myBus){
 	setBus(myBus);
 	setAddress(DEFAULT_ADDRESS);
 	setSpan(0,100);
-	setCounts(ADC_MIN_COUNTS,0x3999);
+	setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 	getFd();
 }
 
@@ -52,7 +52,7 @@ Creates a Default Sensor, I2C Bus Declared, user-defined address
 -----------------------------------
 Pressure Span = 0-100 mBar
 Min ADC counts = ADC_MIN_COUNTS
-Max ADC counts = 0x3999
+Max ADC counts = ADC_MAX_COUNTS
 -----------------------------------
 Args: I2C Bus Number
 Returns: New Pressure Sensor Object
@@ -62,7 +62,7 @@ Pressure::Pressure(int myBus, int myAddress){
 	setBus(myBus);
 	setAddress(myAddress);
 	setSpan(0,100);
-	setCounts(ADC_MIN_COUNTS,0x3999);
+	setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 	getFd();
 }
 /**************************************************
@@ -70,7 +70,7 @@ Pressure::Pressure(int myBus, int myAddress){
 Creates a Default Sensor, I2C Bus Declared, user-defined address, User Defined Span)
 -----------------------------------
 Min ADC counts = ADC_MIN_COUNTS
-Max ADC counts = 0x3999
+Max ADC counts = ADC_MAX_COUNTS
 -----------------------------------
 Args: I2C Bus Number
 Returns: New Pressure Sensor Object
@@ -79,7 +79,7 @@ Pressure::Pressure(int myBus, int myAddress,int myMin, int myMax){
 	setBus(myBus);
 	setAddress(myAddress);
 	setSpan(myMin,myMax);
-	setCounts(ADC_MIN_COUNTS,0x3999);
+	setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 	getFd();
 }
 
