@@ -18,14 +18,12 @@
 
 //Include Headers
 #include<stdlib.h>
-#include<curses.h>
 #include<time.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
 //Definitions
 #define DEFAULT_ADDRESS 0x28
-
 class Pressure {
 
       //Define Device Status Register Value
@@ -39,6 +37,10 @@ class Pressure {
 
       //Define Device Data Register Value
 	static const int DATA_REG = 0x00;
+
+	  //Define Device min and max ADC counts
+	static const int ADC_MIN_COUNTS = 0x0666;
+	static const int ADC_MAX_COUNTS = 0x3999;
 
     public:
 	//Atributes
@@ -54,6 +56,7 @@ class Pressure {
 	Pressure();		  //base constructor
 	Pressure(int);		  //Constructor, Setting Bus
 	Pressure(int,int);	  //Constructor, Setting Bus And Address
+	Pressure(int,int,int,int);	  //Constructor, Setting Bus And Address, Min/Max
 	float mbar2mmhg(float);   //convert mbar to mmhg
 	float counts2mbar(int);   //convert ADC Counts to mBar
 	float counts2mmhg(int);   //convert ADC Counts to mmhg
@@ -70,7 +73,5 @@ class Pressure {
     private:
 	//no private members
 };
-
-#include "pressure.cpp"
 
 #endif

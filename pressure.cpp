@@ -9,7 +9,7 @@ Creates a Default Sensor
 Address = 0x28
 Bus = /dev/i2c-1
 Pressure Span = 0-100 mBar
-Min ADC counts = 0x0666
+Min ADC counts = ADC_MIN_COUNTS
 Max ADC counts = 0x3999
 -----------------------------------
 Args: I2C Bus Number
@@ -20,7 +20,7 @@ Pressure::Pressure(){
 	setBus(1);
 	setAddress(DEFAULT_ADDRESS);
 	setSpan(0,100);
-	setCounts(0x0666,0x3999);
+	setCounts(ADC_MIN_COUNTS,0x3999);
 	getFd();
 }
 
@@ -29,9 +29,9 @@ Pressure::Pressure(){
 Creates a Default Sensor, I2C Bus Declared
 -----------------------------------
 Address = 0x28
-Bus = /dev/i2c-1
+Bus = user defined
 Pressure Span = 0-100 mBar
-Min ADC counts = 0x0666
+Min ADC counts = ADC_MIN_COUNTS
 Max ADC counts = 0x3999
 -----------------------------------
 Args: I2C Bus Number
@@ -42,7 +42,7 @@ Pressure::Pressure(int myBus){
 	setBus(myBus);
 	setAddress(DEFAULT_ADDRESS);
 	setSpan(0,100);
-	setCounts(0x0666,0x3999);
+	setCounts(ADC_MIN_COUNTS,0x3999);
 	getFd();
 }
 
@@ -51,7 +51,7 @@ Pressure::Pressure(int myBus){
 Creates a Default Sensor, I2C Bus Declared, user-defined address
 -----------------------------------
 Pressure Span = 0-100 mBar
-Min ADC counts = 0x0666
+Min ADC counts = ADC_MIN_COUNTS
 Max ADC counts = 0x3999
 -----------------------------------
 Args: I2C Bus Number
@@ -62,9 +62,27 @@ Pressure::Pressure(int myBus, int myAddress){
 	setBus(myBus);
 	setAddress(myAddress);
 	setSpan(0,100);
-	setCounts(0x0666,0x3999);
+	setCounts(ADC_MIN_COUNTS,0x3999);
 	getFd();
 }
+/**************************************************
+* Constructor Method
+Creates a Default Sensor, I2C Bus Declared, user-defined address, User Defined Span)
+-----------------------------------
+Min ADC counts = ADC_MIN_COUNTS
+Max ADC counts = 0x3999
+-----------------------------------
+Args: I2C Bus Number
+Returns: New Pressure Sensor Object
+***************************************************/
+Pressure::Pressure(int myBus, int myAddress,int myMin, int myMax){
+	setBus(myBus);
+	setAddress(myAddress);
+	setSpan(myMin,myMax);
+	setCounts(ADC_MIN_COUNTS,0x3999);
+	getFd();
+}
+
 
 /**************************************************
 * Function counts2mbar()
