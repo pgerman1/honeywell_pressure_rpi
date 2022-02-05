@@ -43,16 +43,9 @@ class Pressure {
 	static const int ADC_MAX_COUNTS = 0x3999;
 
     public:
-	//Atributes
-	int countsmin; // Max ADC Counts
-	int countsmax; // Min ADC Counts
-	int pmin;      // Min Pressure (mBar)
-	int pmax;      // Max Pressure (mBar)
-	int address;   // I2C address of the Transducer IC
-	int bus;       // I2C Bus of the Transducer
-	int fd;	       // Transducer Format Descriptor
 
-  	//Member Functions
+
+  	// Public Member Functions
 	Pressure();		  //base constructor
 	Pressure(int);		  //Constructor, Setting Bus
 	Pressure(int,int);	  //Constructor, Setting Bus And Address
@@ -60,18 +53,29 @@ class Pressure {
 	float mbar2mmhg(float);   //convert mbar to mmhg
 	float counts2mbar(int);   //convert ADC Counts to mBar
 	float counts2mmhg(int);   //convert ADC Counts to mmhg
-	void setCounts(int,int);  //set min and max counts
-	void setSpan(int,int);	  //set min and max pressure
-	void setAddress(int);     //set address
-	void setBus(int);         //set I2C Bus
-	void getFd();             //set format descirptor
-	void setFd(int);          //get format descirptor
+	void getFd();             //get format descirptor
+	void getAddress();        //return I2C Address ** Fix
+	void getBus();        //return I2C Address ** Fix
 	int readCounts();         //Read Data in ADC Counts
 	float readPressure_mmhg();//Read Data in mmHg
 	float readPressure_mbar();//Read Data in mBar
 
-    private:
-	//no private members
+    private://Atributes
+  int countsmin; // Max ADC Counts
+  int countsmax; // Min ADC Counts
+  int pmin;      // Min Pressure (mBar)
+  int pmax;      // Max Pressure (mBar)
+  int address;   // I2C address of the Transducer IC
+  int bus;       // I2C Bus of the Transducer
+  int fd;	       // Transducer Format Descriptor
+
+  // Private Member Functions - Mostly for Setup
+  void setCounts(int,int);  //set min and max counts
+	void setSpan(int,int);	  //set min and max pressure
+	void setAddress(int);     //set address
+	void setBus(int);         //set I2C Bus
+	void setFd(int);          //set format descirptor
+
 };
 
 #endif
