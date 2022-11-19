@@ -19,15 +19,19 @@ Pressure sensorSetup(Pressure,int,int);
 
 
 int main(){
-	float pmbar, pmmhg0, pmmhg1;
-	int word, fd1, fd2, ans;
-	Pressure sensor1(0), sensor2(1);
+
+	float pmbar, pmmhg0, pmmhg1;   	 // data variables
+
+	Pressure sensor1(0), sensor2(1); // initializes 2 pressure sensors on bus 1 and 2
+
 	cout.setf( ios::fixed );
+
+	// read data and display for the user, run 200 times
 	for (int i=0; i<200; i++){
-	pmmhg0=sensor1.readPressure_mmhg();
-	pmmhg1=sensor2.readPressure_mmhg();
+		pmmhg0=sensor1.readPressure_mmhg();
+		pmmhg1=sensor2.readPressure_mmhg();
    	cout <<"Pressure0_hg:: "<< setprecision( 3 ) <<pmmhg0<<"\tPressure1_hg:: "<<pmmhg1<<endl;
-	usleep(50000);
+		usleep(50000);
 	}
 
 	printf("----------------------------------------------\n");
