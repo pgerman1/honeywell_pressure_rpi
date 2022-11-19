@@ -93,9 +93,9 @@ Returns: pressure - Pressure in Milibars
 ***************************************************/
 float Pressure::counts2mbar(int counts){
 
-float myPressure;
+	float myPressure;
 
-myPressure=((((float)counts-countsmin)*(pmax-pmin))/((float)countsmax-(float)countsmin))+pmin;
+	myPressure=((((float)counts-countsmin)*(pmax-pmin))/((float)countsmax-(float)countsmin))+pmin;
 	return myPressure;
 }
 /**************************************************

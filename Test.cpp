@@ -1,6 +1,6 @@
 /**************************************************
 Test Development for pressure Transducer Driver
-
+Example Code and Usage
 ***************************************************/
 #include <stdlib.h>
 #include <time.h>
@@ -29,7 +29,7 @@ int main(){
    	cout <<"Pressure0_hg:: "<< setprecision( 3 ) <<pmmhg0<<"\tPressure1_hg:: "<<pmmhg1<<endl;
 	usleep(50000);
 	}
-	
+
 	printf("----------------------------------------------\n");
 	return 0;
 }
