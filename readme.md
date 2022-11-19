@@ -72,28 +72,29 @@ Read a single data sample the sensor and returns a floating point value in mmHg
 #### float readPressure_mbar();//Read Data in mBar
 Read a single data sample the sensor and returns a floating point value in mBar
 
-###Object Atributes
+### Object Atributes
 Object Atributes are set in the constructor or can be set and retrieved using the Methods above, but are private data for the class.
 
-#### int countsmin (int)
+##### int countsmin (int)
 Minimum ADC Counts of the Sensor, this has a default value of 0x0666
 
-#### countsmax (int)
+##### countsmax (int)
 Minimum ADC Counts of the Sensor, this has a default value of 0x3999
 
-#### pmin (int)      
+##### pmin (int)      
 Minimum Pressure for sensor rannge (mBar)
 Default Value = 0
 
-#### pmax (int)      
+##### pmax (int)      
 Minimum Pressure for sensor rannge (mBar)
 Default Value = 0
 
-#### address (int)   
+##### address (int)   
 I2C address of the Transducer IC.  This is set by the manufacturer for this model and can be obtained from the datasheet.  Sensors can be ordered with various address options, but are set by the factory in firmware and cannot be changed by the end user.
 Default Value = 0x28
 
-#### int bus;       // I2C Bus of the Transducer
+##### bus (int)       // I2C Bus of the Transducer
 Raspberry pi I2C Bus used for communicating with the sensor.  Pi Models may have multiple buses, so this was left configurable.
 Default Value = 1
-#### int fd;	      // Transducer Format Descriptor
+##### fd (int)	      
+Transducer Format Descriptor (WIP)
