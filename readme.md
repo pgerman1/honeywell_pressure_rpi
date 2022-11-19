@@ -13,26 +13,49 @@ This driver was designed for the Raspberry pi using the wiringPi and wiringPiI2C
 
 Four constructors are provided depending on user intent.
 
-Pressure();		  //base constructor
-Pressure(int);		  //Constructor, Setting Bus
-Pressure(int,int);	  //Constructor, Setting Bus And Address
-Pressure(int,int,int,int);	  //Constructor, Setting Bus And Address, Min/Max
+#### Pressure();		  //base constructor
+Base Constructor, Constructs a Pressure Transducer with Default Parameters
+
+I2C Bus = 1
+I2C Address = 0x28
+Pressure Min = 100 mmhg
+Pressure Max = 100 mmhg
+	setSpan(0,100);
+	setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
+
+
+
+#### Pressure(int);		  //Constructor, Setting Bus
+#### Pressure(int,int);	  //Constructor, Setting Bus And Address
+#### Pressure(int,int,int,int);	  //Constructor, Setting Bus And Address, Min/Max
 
 ### Methods
 
-float mbar2mmhg(float)
+#### float mbar2mmhg(float)
 
-float counts2mbar(int)   //convert ADC Counts to mBar
-float counts2mmhg(int)   //convert ADC Counts to mmhg
+#### float counts2mbar(int)   //convert ADC Counts to mBar
+#### float counts2mmhg(int)   //convert ADC Counts to mmhg
 
-void getFd();             //get format descirptor
-void getAddress();        //return I2C Address ** Fix
-void getBus();        //return I2C Address ** Fix
+#### void getFd();             //get format descirptor
+#### void getAddress();        //return I2C Address ** Fix
+#### void getBus();        //return I2C Address ** Fix
 
-int readCounts();         //Read Data in ADC Counts
+#### int readCounts();         //Read Data in ADC Counts
 
-float readPressure_mmhg();//Read Data in mmHg
+#### float readPressure_mmhg();//Read Data in mmHg
 
-float readPressure_mbar();//Read Data in mBar
+#### float readPressure_mbar();//Read Data in mBar
 
-Object Atributes
+###Object Atributes
+
+#### int countsmin; 
+Minimum ADC Counts of the Sensor, this has a default value of 0x0666
+
+#### int countsmax; // Min ADC Counts
+Minimum ADC Counts of the Sensor, this has a default value of 0x3999
+
+#### int pmin;      // Min Pressure (mBar)
+#### int pmax;      // Max Pressure (mBar)
+#### int address;   // I2C address of the Transducer IC
+#### int bus;       // I2C Bus of the Transducer
+#### int fd;	      // Transducer Format Descriptor
