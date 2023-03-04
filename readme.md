@@ -1,11 +1,13 @@
 # Honeywell ABPD Pressure Transducer Driver
 
 ## Overview
-This Repository Contains a pressure transducer driver for the Honeywell ABPDLNN100MG2A3 Pressure Sensor communicating over an I2C Bus on the raspberry pi.  Driver is setup to initialize the I2C Bus and read data from a working
+This Repository Contains a pressure transducer driver for the Honeywell ABPDLNN100MG2A3 Pressure Sensor communicating over an I2C Bus on the raspberry pi.  Driver is setup to initialize the I2C Bus and read data from an installed and powered sensor. The Sensor used for the development driver is a 100 mBAr range sensor
 
 Similar I2C Pressure Sensor models could be used with this driver with minor modifications to the Member functions of this class.
 
-This driver was designed for the Raspberry pi using the wiringPi and wiringPiI2C Library
+Example Datasheet : https://www.mouser.com/datasheet/2/187/HWSC_S_A0013047928_1-3073376.pdf
+
+This driver was designed for the Raspberry pi using the wiringPi and wiringPiI2C Library.
 
 ## Usage
 
@@ -13,7 +15,7 @@ This driver was designed for the Raspberry pi using the wiringPi and wiringPiI2C
 
 Four constructors are provided depending on user intent.
 
-#### Pressure();		  //base constructor
+#### Pressure()
 Base Constructor, Constructs a Pressure Transducer with Default Parameters
 
 I2C Bus = 1
@@ -29,7 +31,7 @@ Pressure Min = 0 mbar
 Pressure Max = 100 mBar
 setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 
-#### Pressure(bus,address);	  //Constructor, Setting Bus And Address
+#### Pressure(bus,address);
 Constructor, Constructs a Pressure Transducer with a custom bus and address setting.
 Pressure Min = 0 mBar
 Pressure Max = 100 mBar
@@ -58,10 +60,12 @@ returns - Pressure in mmHg
 #### void getFd();             //get format descirptor
 prints the Format Descriptor of the object to the standard output.
 
-#### void getAddress();        //return I2C Address ** Fix
+#### getAddress(void)
 prints the I2C Address of the object to the standard output.
-#### void getBus();        		 //return I2C Address ** Fix
+
+#### getBus(void)
 prints the bus information to the standard output.
+
 #### int readCounts();         //Read Data in ADC Counts
 Read a single data sample the sensor and returns a floating point value raw ADC Counts.
 Method is best used for calibration of the sensor.
