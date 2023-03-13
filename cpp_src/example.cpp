@@ -30,7 +30,7 @@ int main(){
 	// read data and display for the user, run 200 times
 	for (int i=0; i<200; i++){
 		pmmhg0=sensor1.readPressure_mmhg();
-   	cout <<"Pressure0_hg:: "<< setprecision( 3 ) <<pmmhg0<<endl;
+   		cout <<"Pressure0_hg:: "<< setprecision( 3 ) <<pmmhg0<<endl;
 		usleep(50000);
 	}
 
