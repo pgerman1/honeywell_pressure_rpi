@@ -7,17 +7,14 @@ Similar I2C Pressure Sensor models could be used with this driver with minor mod
 
 Example Datasheet : https://www.mouser.com/datasheet/2/187/HWSC_S_A0013047928_1-3073376.pdf
 
-This driver was originally designed for the Raspberry pi using the wiringPi and wiringPiI2C Library.
+This driver was designed for the Raspberry pi using the wiringPi and wiringPiI2C Library.
 
-Update 4/1/2023 - Wiring pi library is deprecated by its owner, so the API has been ported to use pigpio instead.  This is maintained at https://abyz.me.uk/rpi/pigpio/
+## Deprecation Notice
 
+This Library is api has been tested with wiring pi and was in working order the last time it was tested.
+The creator of the wiring pi library no longer supports it, so this source was ported to pigpio on 4/1/2023.
 
-## Dependencies
-
-For the examples to work out of the box you will need the the following installed:
-- g++
-- make
-- pigpio
+This code will no longer be maintained, but I left this in case there are any legacy projects or systems still running wiring pi to use.
 
 ## Usage
 
@@ -112,3 +109,6 @@ Raspberry pi I2C Bus used for communicating with the sensor.  Pi Models may have
 Default Value = 1
 ##### fd (int)	      
 Transducer Format Descriptor (WIP)
+
+
+
