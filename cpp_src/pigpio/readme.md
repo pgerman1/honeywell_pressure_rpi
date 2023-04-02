@@ -25,6 +25,8 @@ For the examples to work out of the box you will need the the following installe
 - compile with make.
 - run example_single to read pressure from a single pressure sensor.
 
+-----------------------------------------------------------
+
 ### Constructors
 
 Four constructors are provided depending on user intent.
@@ -54,9 +56,13 @@ setCounts(ADC_MIN_COUNTS,ADC_MAX_COUNTS);
 #### Pressure(bus,address,pressure min, pressure max);
 Constructor, Constructs a Pressure Transducer with a custom bus, address, and pressure min/max setting.This Constructor also opens an I2C Reference (handle) to the sensor.
 
+-----------------------------------------------------------
+
 ### Destructor
 #### ~Pressure();
 Destructor Closes the I2C reference from the sensor object and releases resouces.
+
+-----------------------------------------------------------
 
 ### Methods - Getters
 
@@ -80,6 +86,8 @@ return the Maximum Pressure Scale of the sensor object.  For the default applica
 
 #### unsigned getHandle(void)
 return the I2C reference Handle of sensor object.  Useful for Troubleshooting.
+
+-----------------------------------------------------------
 
 ### Methods - Setters
 
@@ -115,6 +123,8 @@ uses the i2cOpen method to open an I2C refernce to the adress of the object.  Sh
 Args - none
 Returns - None
 
+-----------------------------------------------------------
+
 ### Methods - I/O Readers
 
 #### int readCounts(); 
@@ -132,6 +142,7 @@ Read a single data sample the sensor and returns a floating point value in mBar
 - args - None
 - reutrns - Pressure Reading in mmHg
 
+-----------------------------------------------------------
 
 ### Methods - Utility
 
