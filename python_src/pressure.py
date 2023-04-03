@@ -9,11 +9,11 @@ with this driver with minor modifcations to the
 Member functions of this class
 
 This driver was designed for the Raspberry pi using the
-smbus library for 
+smbus library for python
 """
 
-#import headers
-import smbus 
+#Import Modules
+import smbus
 
 
 #********************************************************************************
