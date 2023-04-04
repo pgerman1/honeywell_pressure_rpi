@@ -1,15 +1,25 @@
 #!/usr/bin/python3
+#-------------------------------------------------------
+# This is a Test Program demonstating reading from a
+# Honeywell ABPD sensor using the pressure class included
+# With This Example.  This program displays the sensor
+# Information, Aquires Data, and Writes the Data to a 
+# CSV.
+#-------------------------------------------------------
 
+
+# import Statements
 import time
 import datetime
 import os
 import csv
 import pressure as sensor
 
+#Constants
 POST_READ_DELAY = 0.1   # This is needed with the smbus python library to prevent the unit from reading the i2c bus too quickly. 
 WRITE_DELAY = 0.05      # Update Delay, found this made things smoother.
 
-DATA_FILE = 'pressure_data.csv'
+DATA_FILE = 'pressure_data.csv'  # File to write out.
 
 #-----------------------------------------------------------
 # Function Main()
@@ -44,6 +54,8 @@ def display_info(sensor):
 # Function read_data()
 # Displays the information about the sensor object to the 
 # standard output for debugging.
+# Args - sensor - A Sensor Object.
+# Returns - List of Data and Timestamps
 #-----------------------------------------------------------
 
 def read_data(sensor):
@@ -72,10 +84,12 @@ def read_data(sensor):
         dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     # Write data to List
     
     return dataList
+
 #-----------------------------------------------------------
 # Function write_data()
-# Writes data to the CSV filename passed 
-# standard output for debugging.
+# Writes data to the CSV filename passed to the function.
+# Args - data - Data List
+#      - fileName - name of Data File to Write
 #-----------------------------------------------------------
 def writeData(data,fileName):
 
