@@ -53,7 +53,7 @@ class Pressure:
 	# Converts from millibar pressure to inches of mercury
 	# args - pMbar 
 	#******************************************************
-	def mBar2mmhg(pMbar):
+	def mBar2mmhg(self,pMbar):
 		return (pMbar * MMHG_MBAR_RATIO)
 
 	#******************************************************
@@ -72,7 +72,7 @@ class Pressure:
 	#converts ADC Counts to pressure in mBar
 	#******************************************************
 	@classmethod
-	def counts2mBar(counts):
+	def counts2mBar(self,counts):
 		pressure=(((counts - self.minCounts)) / (self.maxCounts - self.minCounts)) + self.pressureMin
 
 		return float(pressure);
