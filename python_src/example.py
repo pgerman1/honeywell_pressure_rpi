@@ -56,7 +56,7 @@ def read_data(sensor):
         print(" pressure in mbar is:" + str(pressureMbar))	
         print("-----------------------------------")
         time.sleep(WRITE_DELAY)
-        dataList.append =[i,timeStamp, counts, pressureMbar, pressureMmhg]     
+        dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     
     return dataList
 
 
