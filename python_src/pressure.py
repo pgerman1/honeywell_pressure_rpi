@@ -65,12 +65,14 @@ class Pressure:
 			self.address, 
 			FIFO_DATA_REG, 
 			DATA_READ_BYTES)
-		myPres = (dataSample[0]<<8 )  | (dataSample[1] ) 
-		return myPres;
+		adcCounts = (dataSample[0]<<8 )  | (dataSample[1] ) 
+		return adcCounts;
 	#******************************************************
 	#Function counts2mbar()
 	#converts ADC Counts to pressure in mBar
 	#******************************************************
-	def counts2mBar(self,counts):
+	@classmethod
+	def counts2mBar(counts):
 		pressure=(((counts - self.minCounts)) / (self.maxCounts - self.minCounts)) + self.pressureMin
+
 		return float(pressure);
