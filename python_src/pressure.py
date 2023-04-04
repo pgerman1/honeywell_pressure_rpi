@@ -55,7 +55,6 @@ class Pressure ():
 	#******************************************************
 	def mBar2mmhg(self,pMbar):
 		return (pMbar * MMHG_MBAR_RATIO)
-
 	#******************************************************
 	#Function readSample()
 	#Reads from 
@@ -72,5 +71,5 @@ class Pressure ():
 	#converts ADC Counts to pressure in mBar
 	#******************************************************
 	def counts2mBar(self,counts):
-		pressure=(((counts - self.minCounts)) / (self.maxCounts - self.minCounts)) + self.pressureMin
+		pressure=(((counts - self.minCounts) * (self.pressureMax-self.pressureMin)) / (self.maxCounts - self.minCounts)) + self.pressureMin
 		return float(pressure);
