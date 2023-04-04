@@ -3,12 +3,13 @@
 import time
 import datetime
 import os
+import csv
 import pressure as sensor
 
 POST_READ_DELAY = 0.1   # This is needed with the smbus python library to prevent the unit from reading the i2c bus too quickly. 
 WRITE_DELAY = 0.05      # Update Delay, found this made things smoother.
 
-DATA_FILE = 'pressure_data_output'
+DATA_FILE = 'pressure_data.csv'
 
 #-----------------------------------------------------------
 # Function Main()
@@ -20,7 +21,8 @@ def main():
     sensor1 = sensor.Pressure()
     display_info(sensor1)
     acqData = read_data(sensor1)
-    print(acqData)
+    writeData(acqData,DATA_FILE)
+
 #-----------------------------------------------------------
 # Function display_info()
 # Displays the information about the sensor object to the 
@@ -38,30 +40,47 @@ def display_info(sensor):
     time.sleep(2)       # 2 Second Display for Splash Screen
     os.system("clear")  # Clear Screen and Move On
 
+#-----------------------------------------------------------
+# Function read_data()
+# Displays the information about the sensor object to the 
+# standard output for debugging.
+#-----------------------------------------------------------
+
 def read_data(sensor):
-    dataList = [] # empty list to hold data         
-    for i in range (0, 240 ):
+    
+    dataList = ['SampleId','Time Stamp','ADC Counts','Pressure(mBar)','Pressure(mmHg)'] # list to hold data, Made top row headers
+
+    for i in range (0, 240 ):                                   # Sample the Transducer 240x
+    
         counts=sensor.readCounts()
         timeStamp = str(datetime.datetime.now())                     # Grab a Timestamp
         time.sleep(POST_READ_DELAY)                             # Wait 
         pressureMbar = round(sensor.counts2mBar(counts),3)      # Convert Raw Counts to mBar
         pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3)  # Convert mBar pressure to mmHg
         
-        os.system("clear")
-        print("-----------------------------------")
-        print("pressure in mmhg is : " + str(counts))
+        os.system("clear")                                      #Clear Screen between Samples
+        print("-----------------------------------")            # Print some Info to Standard Output
+        print("Sensor ADC Counts is: " + str(counts))
         print("-----------------------------------")
         print("pressure in mmhg is : " + str(pressureMmhg))
         print("-----------------------------------")
         print("pressure in mbar is : " + str(pressureMbar))	
         print("-----------------------------------")
         print(timeStamp)
-        time.sleep(WRITE_DELAY)
+        time.sleep(WRITE_DELAY)                                # Wait after Sample Read.
 
-        dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     
+        dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     # Write data to List
     
     return dataList
+#-----------------------------------------------------------
+# Function write_data()
+# Writes data to the CSV filename passed 
+# standard output for debugging.
+#-----------------------------------------------------------
+def writeData(data,fileName):
 
-
+    with open(fileName, 'w') as f: # Open Data File
+        write = csv.writer(f)       # Create csv Writer object
+        write.writerows(data)       # Write Data list to CSV
 
 main()
