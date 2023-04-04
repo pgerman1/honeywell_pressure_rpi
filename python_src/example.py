@@ -44,16 +44,16 @@ def read_data(sensor):
         counts=sensor.readCounts()
         timeStamp = datetime.now()                  # Grab a Timestamp
         time.sleep(POST_READ_DELAY)                 # Wait 
-        pressureMbar = sensor.counts2mBar(counts)   # Convert Raw Counts to mBar
-        pressureMmhg = sensor.mBar2mmhg(pressureMbar) # Convert mBar pressure to mmHg
+        pressureMbar = round(sensor.counts2mBar(counts),3)   # Convert Raw Counts to mBar
+        pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3) # Convert mBar pressure to mmHg
         
         os.system("clear")
         print("-----------------------------------")
-        print("pressure in mmhg is:" + str(counts))
+        print("pressure in mmhg is : " + str(counts))
         print("-----------------------------------")
-        print("pressure in mmhg is:" + str(pressureMmhg))
+        print("pressure in mmhg is : " + str(pressureMmhg))
         print("-----------------------------------")
-        print(" pressure in mbar is:" + str(pressureMbar))	
+        print("pressure in mbar is : " + str(pressureMbar))	
         print("-----------------------------------")
         time.sleep(WRITE_DELAY)
         dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     
