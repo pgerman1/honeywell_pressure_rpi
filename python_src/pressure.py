@@ -53,6 +53,7 @@ class Pressure:
 	# Converts from millibar pressure to inches of mercury
 	# args - pMbar 
 	#******************************************************
+	@classmethod
 	def mBar2mmhg(self,pMbar):
 		return (pMbar * MMHG_MBAR_RATIO)
 
@@ -60,6 +61,7 @@ class Pressure:
 	#Function readSample()
 	#Reads from 
 	#******************************************************
+	@classmethod
 	def readSample(self):
 		dataSample= self.bus.read_i2c_block_data(
 			self.address, 
