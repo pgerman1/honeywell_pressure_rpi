@@ -5,6 +5,8 @@
 # With This Example.  This program displays the sensor
 # Information, Aquires Data, and Writes the Data to a 
 # CSV.
+#
+# This program leverages the smbus i2c library
 #-------------------------------------------------------
 
 
