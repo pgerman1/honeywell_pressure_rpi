@@ -15,18 +15,22 @@ smbus library for python
 #Import Modules
 import smbus
 
-
 #********************************************************************************
 #***************************** CONSTANT VALUES **********************************
 #********************************************************************************
 
+#Default Values
 DEFAULT_COUNTSMIN = int(0x0666) 	# Output Min Counts
 DEFAULT_COUNTSMAX = int(0x3999) 	# Output Max Counts
 DEFAULT_BUS = 1						# Default I2C Bus
 DEFAULT_PMAX = 100 		      		# Pressure in mBar
 DEFAULT_PMIN = 0				  	# Min Pressure in mBar
 DEFAULT_ADDRESS = 0x28				# Default I2C Address
+
+#Magic Numbers
 MMHG_MBAR_RATIO = 0.7500			# Conversion Rate from mBar to mmHg - Pro Tip - no Magic Numbers.
+FIFO_DATA_REG = int(0x00)			# Data Register to Read from on at the Address
+DATA_READ_BYTES = 2					# Number of Bytes to read from the I2C Bus (2B, 1 Word)
 
 # Class Definition
 class Pressure:
@@ -56,9 +60,11 @@ class Pressure:
 	#Function readSample()
 	#Reads from 
 	#******************************************************
-		
-	def readSample():
-		dataSample= bus.read_i2c_block_data(address, FIFO_DATA_REG,2)
+	def readSample(self):
+		dataSample= self.bus.read_i2c_block_data(
+			self.address, 
+			FIFO_DATA_REG, 
+			DATA_READ_BYTES)
 		myPres = (dataSample[0]<<8 )  | (dataSample[1] ) 
 		return myPres;
 	#******************************************************
@@ -66,5 +72,5 @@ class Pressure:
 	#converts ADC Counts to pressure in mBar
 	#******************************************************
 	def counts2mBar(counts):
-		pressure=(((counts-COUNTSMIN)*(PMAX-PMIN))/(COUNTSMAX-COUNTSMIN))+PMIN
+		pressure=(((counts- self.countsMin))/(COUNTSMAX-COUNTSMIN))+PMIN
 		return float(pressure);
