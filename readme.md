@@ -15,7 +15,7 @@ Update 4/3/2023 - Python Implementation examples have been added and tested, Ful
 
 ## Supported Languages
 
-Currently this API offers support for C++, and a Limited Python Implementation for Protoyping. Now that the development of the API is stable, i plan on porting it to Go, and Perhaps Rust.
+Currently this API offers support for C++, and a Limited Python Implementation for Prototyping. Now that the development of the API is stable, i plan on porting it to Go, and Perhaps Rust.
 
 ## Dependencies
 
