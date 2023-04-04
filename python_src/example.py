@@ -41,7 +41,7 @@ def display_info(sensor):
 def read_data(sensor):
     dataList = [] # empty list to hold data         
     for i in range (0, 240 ):
-        counts=sensor.readSample()
+        counts=sensor.readCounts()
         timeStamp = datetime.now()                  # Grab a Timestamp
         time.sleep(POST_READ_DELAY)                 # Wait 
         pressureMbar = sensor.counts2mBar(counts)   # Convert Raw Counts to mBar
