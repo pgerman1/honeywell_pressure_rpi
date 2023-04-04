@@ -24,9 +24,10 @@ def read_data(sensor):
          
     for i in range (0, 240 ):
         data=sensor.readSample()
+        print(data)
         time.sleep(.1)
-        pressure_m = sensor.counts2mBar(data)
-        pressure_hg = sensor.mBar2mmhg(pressure_m)
+    #    pressure_m = sensor.counts2mBar(data)
+    #    pressure_hg = sensor.mBar2mmhg(pressure_m)
         os.system("clear")
         print("pressure in mmhg is:" + str(pressure_hg)	+" pressure in mbar is:" + str(pressure_m))	
         time.sleep(.05)
