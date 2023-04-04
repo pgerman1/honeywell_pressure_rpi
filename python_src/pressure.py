@@ -33,7 +33,7 @@ FIFO_DATA_REG = int(0x00)			# Data Register to Read from on at the Address
 DATA_READ_BYTES = 2					# Number of Bytes to read from the I2C Bus (2B, 1 Word)
 
 # Class Definition
-class Pressure:
+class Pressure ():
 
 	#Base Constructor Method, Default Settings
 
@@ -76,5 +76,4 @@ class Pressure:
 	@classmethod
 	def counts2mBar(self,counts):
 		pressure=(((counts - self.minCounts)) / (self.maxCounts - self.minCounts)) + self.pressureMin
-
 		return float(pressure);
