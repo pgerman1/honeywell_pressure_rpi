@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import time
-from datetime import datetime
+import datetime
 import os
 import pressure as sensor
 
@@ -42,10 +42,10 @@ def read_data(sensor):
     dataList = [] # empty list to hold data         
     for i in range (0, 240 ):
         counts=sensor.readCounts()
-        timeStamp = datetime.now()                  # Grab a Timestamp
-        time.sleep(POST_READ_DELAY)                 # Wait 
-        pressureMbar = round(sensor.counts2mBar(counts),3)   # Convert Raw Counts to mBar
-        pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3) # Convert mBar pressure to mmHg
+        timeStamp = datetime.datetime.now()                     # Grab a Timestamp
+        time.sleep(POST_READ_DELAY)                             # Wait 
+        pressureMbar = round(sensor.counts2mBar(counts),3)      # Convert Raw Counts to mBar
+        pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3)  # Convert mBar pressure to mmHg
         
         os.system("clear")
         print("-----------------------------------")
@@ -56,7 +56,9 @@ def read_data(sensor):
         print("pressure in mbar is : " + str(pressureMbar))	
         print("-----------------------------------")
         time.sleep(WRITE_DELAY)
+
         dataList.append([i,timeStamp, counts, pressureMbar, pressureMmhg])     
+    
     return dataList
 
 
