@@ -71,6 +71,6 @@ class Pressure:
 	#Function counts2mbar()
 	#converts ADC Counts to pressure in mBar
 	#******************************************************
-	def counts2mBar(counts):
-		pressure=(((counts- self.countsMin))/(COUNTSMAX-COUNTSMIN))+PMIN
+	def counts2mBar(self,counts):
+		pressure=(((counts - self.minCounts)) / (self.maxCounts - self.minCounts)) + self.pressureMin
 		return float(pressure);
