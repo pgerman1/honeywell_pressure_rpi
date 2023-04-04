@@ -11,10 +11,11 @@ This driver was originally designed for the Raspberry pi using the wiringPi and 
 
 Update 4/1/2023 - Wiring pi library is deprecated by its owner, so the API has been ported to use pigpio instead.  This is maintained at https://abyz.me.uk/rpi/pigpio/
 
+Update 4/3/2023 - Python Implementation examples have been added and tested, Full Documentation Coming Soon.
 
 ## Supported Languages
 
-Currently this API only offers support for C++, but now that the development of the API is stable, i plan on porting it to python, Go, and Perhaps Rust.
+Currently this API offers support for C++, and a Limited Python Implementation for Protoyping. Now that the development of the API is stable, i plan on porting it to Go, and Perhaps Rust.
 
 ## Dependencies
 
