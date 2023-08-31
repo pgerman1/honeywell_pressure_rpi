@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/d2r2/go-i2c"
 	"github.com/d2r2/go-logger"
@@ -21,7 +22,7 @@ const (
 	DEFAULT_ADDR         = 0x28
 	DEFAULT_MAX_PRESSURE = 100
 	DEFAULT_MIN_PRESSURE = 0
-	DEFAULT_BUS          = 0
+	DEFAULT_BUS          = 1
 	DEFAULT_DEVICE       = "/dev/i2c-0"
 )
 
@@ -121,7 +122,7 @@ func (sensor *Pressure) initialize() {
 	logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
 	i2cdevice, err := i2c.NewI2C(uint8(sensor.address), sensor.bus)
 	if err != nil {
-		//	panic(err)
+		panic(err)
 	}
 
 	sensor.databus = *i2cdevice
@@ -139,7 +140,7 @@ func (sensor *Pressure) read_counts() uint16 {
 
 	dataSample, err := sensor.databus.ReadRegU16BE(DATA_REG)
 	if err != nil {
-		//		panic(err)
+		panic(err)
 	}
 	return dataSample
 }
@@ -160,6 +161,20 @@ func (sensor *Pressure) read_mbar() float32 {
 
 /*
 *************************************************
+Function read_mbar()
+Descritpion: Reads the current pressure sensor data
+and converts it to milibars
+Returns: Presure Sensor Pressure in Milibars (Float32)
+**************************************************
+*/
+func (sensor *Pressure) read_mmhg() float32 {
+
+	return (sensor.read_mbar() * MMHG_MBAR_RATIO)
+
+}
+
+/*
+*************************************************
 Function counts2mbar()
 Descritpion: Converts Counts to Milibar Pressure
 Returns: pMbar - Pressure in Milibars (Float32)
@@ -168,10 +183,9 @@ Returns: pMbar - Pressure in Milibars (Float32)
 func (sensor *Pressure) counts2mbar(counts uint16) float32 {
 
 	var pMbar float32
-	num := float32(((uint16(counts) - uint16(sensor.minCounts)) * (uint16(sensor.pMax) - uint16(sensor.pMin))))
-	den := float32(sensor.maxCounts - sensor.minCounts)
-	pMbar = (num / den) + float32(sensor.pMin)
-	//	pMbar = float32(float32(((uint16(counts)-uint16(sensor.minCounts))*(uint16(sensor.pMax)-uint16(sensor.pMin))))/(float32(sensor.maxCounts-sensor.minCounts))) + float32(sensor.pMin)
+	num := float32(int(counts)-sensor.minCounts) * float32(sensor.pMax-sensor.pMin) // Numerator
+	den := float32(sensor.maxCounts - sensor.minCounts)                             //Denominator
+	pMbar = (num / den) + float32(sensor.pMin)                                      //add min pressure, should add an additional calibration offset.
 	return pMbar
 }
 
@@ -196,9 +210,11 @@ func main() {
 
 	fmt.Println("Sensor Bus : ", sensor1.bus)
 
-	dataSample := sensor1.read_counts()
-	dataSample2 := sensor1.read_mbar()
-	fmt.Println("Counts Data Read :", dataSample)
-	fmt.Println("mBar Data Read :", dataSample2)
+	for i := 0; i < 100; i++ {
+		time.Sleep(50 * time.Millisecond)
+		dataSample3 := sensor1.read_mmhg()
+		fmt.Println("mmHg Data Read :", dataSample3)
+		time.Sleep(10 * time.Millisecond)
+	}
 	sensor1.databus.Close()
 }
