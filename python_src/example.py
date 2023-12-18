@@ -20,6 +20,7 @@ import pressure as sensor
 #Constants
 POST_READ_DELAY = 0.1   # This is needed with the smbus python library to prevent the unit from reading the i2c bus too quickly. 
 WRITE_DELAY = 0.05      # Update Delay, found this made things smoother.
+DEFAULT_NUM_SAMPLES=240 # Default Number of Data Samples to Aquire
 
 DATA_FILE = 'pressure_data.csv'  # File to write out.
 
@@ -30,10 +31,11 @@ DATA_FILE = 'pressure_data.csv'  # File to write out.
 #-----------------------------------------------------------
 
 def main():
-    sensor1 = sensor.Pressure()
-    display_info(sensor1)
-    acqData = read_data(sensor1)
-    writeData(acqData,DATA_FILE)
+    sensor1 = sensor.Pressure()                             # Create a Sensor Object
+    display_info(sensor1)                                   # Display the Sensors Info
+    acqData = read_data(sensor1,DEFAULT_NUM_SAMPLES)        # Aquire some Sample Data
+    writeData(acqData,DATA_FILE)                            # Write Data to a CSV File
+    exit(0)                                                 # Clean Exit
 
 #-----------------------------------------------------------
 # Function display_info()
@@ -60,17 +62,17 @@ def display_info(sensor):
 # Returns - List of Data and Timestamps
 #-----------------------------------------------------------
 
-def read_data(sensor):
+def read_data(sensor,numSamples):
     
     dataList = ['SampleId','Time Stamp','ADC Counts','Pressure(mBar)','Pressure(mmHg)'] # list to hold data, Made top row headers
 
-    for i in range (0, 240 ):                                   # Sample the Transducer 240x
+    for i in range (0, numSamples ):                                   # Sample the Transducer 240x
     
         counts=sensor.readCounts()
         timeStamp = str(datetime.datetime.now())                     # Grab a Timestamp
-        time.sleep(POST_READ_DELAY)                             # Wait 
-        pressureMbar = round(sensor.counts2mBar(counts),3)      # Convert Raw Counts to mBar
-        pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3)  # Convert mBar pressure to mmHg
+        time.sleep(POST_READ_DELAY)                                 # Wait for i2c bus 
+        pressureMbar = round(sensor.counts2mBar(counts),3)          # Convert Raw Counts to mBar
+        pressureMmhg = round(sensor.mBar2mmhg(pressureMbar),3)      # Convert mBar pressure to mmHg
         
         os.system("clear")                                      #Clear Screen between Samples
         print("-----------------------------------")            # Print some Info to Standard Output

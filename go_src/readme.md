@@ -1,12 +1,14 @@
-# Honeywell ABPD Pressure Transducer Driver - Python Implementation
+# Honeywell ABPD Pressure Transducer Driver - Go Implementation
 
-This is intended to be a lightweight module for reading a pressure transducer easily with python.  
-This example is intended for developers more comfortable with python for simple reads and writes, its performance is not as robust as the C++ implementation included in this repository, but if you are just looking for some low rate data samples, this is a good starting point for anyone.
+This is intended to be a demo package for reading a pressure transducer easily with the go language.  
+This example required some knowlege of the go language and compiler simple reads and writes.  The eventual intent is to benchmark the performance of each of the implementations of this driver against each other and compare performance.
 
 ## Usage
 
 ### Example Code Usage
-- After the above are installed, you can connect the sensor to your raspberry pi on bus 1.
+- After the above are installed, you can connect the sensor to your raspberry pi on i2c bus 1.
+- Complile the code using go build. You will need to cross compile it for your particular raspberry pi hardware.
+* this was originally written for the raspberry pi zero, which uses an ARMV6 Procesor
 - Deploy the code to you raspberry pi target.
 - run example.py to read pressure from a single pressure sensor and write data out to a csv.
 
@@ -17,8 +19,8 @@ Full Documentation Coming Soon
 - address - i2c Address of the sensor - Default Address -0x28
 - minCounts - Minimum Counts (Zero Reading) for the sensor - Default Value -0x0666
 - maxCounts - Maximum Counts (Full Scale Reading) for the sensor - Default Value -0x03999
-- pressureMin - Minimum Pressure (Zero Reading) for the sensor - Default Value -0 mBar
-- pressureMin - Maximum Pressure (Full Scale Reading) for the sensor - Default Value - 100 mBar
+- pMin - Minimum Pressure (Zero Reading) for the sensor - Default Value -0 mBar
+- pMin - Maximum Pressure (Full Scale Reading) for the sensor - Default Value - 100 mBar
 - bus - and smbus Object created for the i2c bus selected - default i2c Bus is 1
 
 ### Data Read Methods
@@ -57,7 +59,5 @@ Converts raw sensor ADC counts to Pressure in mBar by applying the following exp
 Converts Pressure in mBar to mmHg with the converion ratio of 0.75
 - Args - pMbar - Pressure in mBar (float)
 - Returns - Pressure in mmHg (Float)
-
-
 
 -----------------------------------------------------------

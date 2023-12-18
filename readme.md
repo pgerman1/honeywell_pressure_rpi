@@ -20,7 +20,7 @@ Currently this API offers support for the following Languages:
 |Language| Description|Last Update|Notes|
 |:---:|:---:|:---:|:---:|
 |C++| Full Implementation C++ API|4/3/2023| Full Implementation with Examples|
-|Python| Limited Implementation API|||
+|Python| Limited Implementation API|4/3/2023||
 |Go| In Work| N/A | Work in Progress|
 
 Now that the development of the API is stable, i plan on porting it to Go, and Perhaps Rust.

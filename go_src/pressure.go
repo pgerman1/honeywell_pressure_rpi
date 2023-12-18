@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"strconv"
 	"time"
 
-	"github.com/d2r2/go-i2c"
-	"github.com/d2r2/go-logger"
+	"golang.org/x/exp/io/i2c"
 )
 
 // Constants
@@ -22,21 +23,21 @@ const (
 	DEFAULT_ADDR         = 0x28
 	DEFAULT_MAX_PRESSURE = 100
 	DEFAULT_MIN_PRESSURE = 0
-	DEFAULT_BUS          = 1
+	DEFAULT_BUS          = 0
 	DEFAULT_DEVICE       = "/dev/i2c-0"
 )
 
 // Class Declration
 type Pressure struct {
-	bus       int     // the i2c Bus of the sensor
-	address   int     // i2c Address of the sensor
-	minCounts int     // Minimum Counts (Zero Reading) for the sensor
-	maxCounts int     // Maximum Counts (Full Scale Reading) for the sensor
-	pMin      int     // Minimum Pressure (Zero Reading) for the sensor
-	pMax      int     // Maximum Pressure (Full Scale Reading) for the sensor
-	i2cHandle uint32  // Reference to the I2C Handle
-	data      float32 // Stored Data
-	databus   i2c.I2C //Create an I2C Device Variable
+	bus       int        // the i2c Bus of the sensor
+	address   int        // i2c Address of the sensor
+	minCounts int        // Minimum Counts (Zero Reading) for the sensor
+	maxCounts int        // Maximum Counts (Full Scale Reading) for the sensor
+	pMin      int        // Minimum Pressure (Zero Reading) for the sensor
+	pMax      int        // Maximum Pressure (Full Scale Reading) for the sensor
+	i2cHandle uint32     // Reference to the I2C Handle
+	data      float32    // Stored Data
+	databus   i2c.Device //Create an I2C Device Variable
 }
 
 //Setter Functions
@@ -119,8 +120,10 @@ func (sensor *Pressure) set_min_pressure(myPressure int) {
 // Need to make this so that the default bus and device can change
 func (sensor *Pressure) initialize() {
 
-	logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
-	i2cdevice, err := i2c.NewI2C(uint8(sensor.address), sensor.bus)
+	//	logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
+	//	i2cdevice, err := i2c.NewI2C(uint8(sensor.address), sensor.bus)
+
+	i2cdevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, DEFAULT_ADDR)
 	if err != nil {
 		panic(err)
 	}
@@ -136,13 +139,14 @@ register.
 Returns: Presure Sensor Current ADC Counts
 **************************************************
 */
-func (sensor *Pressure) read_counts() uint16 {
+func (sensor *Pressure) read_counts() int {
 
-	dataSample, err := sensor.databus.ReadRegU16BE(DATA_REG)
-	if err != nil {
-		panic(err)
-	}
-	return dataSample
+	//	dataSample, err := sensor.databus.ReadRegU16BE(DATA_REG)
+	var buffer []byte
+	buffer = append(buffer, 2)
+	dataBuffer := sensor.databus.Read(buffer)
+	dataSample := bytes.Buffer(dataBuffer)
+	return int(dataSample)
 }
 
 /*
@@ -180,7 +184,7 @@ Descritpion: Converts Counts to Milibar Pressure
 Returns: pMbar - Pressure in Milibars (Float32)
 **************************************************
 */
-func (sensor *Pressure) counts2mbar(counts uint16) float32 {
+func (sensor *Pressure) counts2mbar(counts int) float32 {
 
 	var pMbar float32
 	num := float32(int(counts)-sensor.minCounts) * float32(sensor.pMax-sensor.pMin) // Numerator
@@ -207,14 +211,17 @@ func main() {
 
 	// Declare a Sensor Object
 	var sensor1 = newSensor()
-
 	fmt.Println("Sensor Bus : ", sensor1.bus)
-
+	var count = 0
 	for i := 0; i < 100; i++ {
-		time.Sleep(50 * time.Millisecond)
-		dataSample3 := sensor1.read_mmhg()
-		fmt.Println("mmHg Data Read :", dataSample3)
-		time.Sleep(10 * time.Millisecond)
+
+		dataSample := sensor1.read_counts()
+		fmt.Println("mmHg Data Read :", strconv.FormatInt(int64(dataSample), 16))
+		time.Sleep(100 * time.Millisecond)
+		if dataSample > 2000.0 {
+			count++
+		}
 	}
+	println("error count: ", count)
 	sensor1.databus.Close()
 }
