@@ -77,7 +77,6 @@ Max ADC counts = 0x3999
 Args: I2C Bus Number, address, span min, span max
 Returns: New Pressure Sensor Object
 ***************************************************/
-
 Pressure::Pressure(unsigned myBus, unsigned myAddress, int spanMin, int spanMax){
 	setBus(myBus);
 	setAddress(myAddress);
