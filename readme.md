@@ -13,21 +13,11 @@ Update 4/1/2023 - Wiring pi library is deprecated by its owner, so the API has b
 
 Update 4/3/2023 - Python Implementation examples have been added and tested, Full Documentation Coming Soon.
 
-## Supported Languages
+## Implementations
 
-Currently this API offers support for the following Languages:
-
-|Language| Description|Last Update|Notes|
-|:---:|:---:|:---:|:---:|
-|C++| Full Implementation C++ API|4/3/2023| Full Implementation with Examples|
-|Python| Limited Implementation API|4/3/2023||
-|Go| In Work| N/A | Work in Progress|
-
-Now that the development of the API is stable, i plan on porting it to Go, and Perhaps Rust.
-
-## Dependencies
-
-For the examples to work out of the box you will need the the following installed:
-- g++
-- make
-- pigpio
+| Language | Location | Notes |
+| --- | --- | --- |
+| Rust | [Documentation](rust_src/readme.md) | I²C driver using RPPAL, with status checking and unit tests |
+| C++ (pigpio) | [Documentation](cpp_src/pigpio/readme.md) | Working C++ implementation; requires g++, make, and pigpio |
+| C++ (wiringPi) | [Documentation](cpp_src/wiringpi/readme.md) | Original implementation |
+| Python | [Documentation](python_src/readme.md) | Limited implementation for prototyping |
