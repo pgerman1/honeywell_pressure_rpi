@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"strconv"
 	"time"
@@ -140,13 +139,25 @@ Returns: Presure Sensor Current ADC Counts
 **************************************************
 */
 func (sensor *Pressure) read_counts() int {
+	buffer := make([]byte, 2)
 
-	//	dataSample, err := sensor.databus.ReadRegU16BE(DATA_REG)
-	var buffer []byte
-	buffer = append(buffer, 2)
-	dataBuffer := sensor.databus.Read(buffer)
-	dataSample := bytes.Buffer(dataBuffer)
-	return int(dataSample)
+	if err := sensor.databus.Read(buffer); err != nil {
+		panic(fmt.Errorf("I2C read failed: %w", err))
+	}
+
+	raw := uint16(buffer[0])<<8 | uint16(buffer[1])
+	status := raw >> 14
+	counts := int(raw & 0x3fff)
+
+	fmt.Printf("raw=0x%04x status=%02b counts=%d\n",
+		raw, status, counts)
+
+	if status != 0 {
+		// Diagnostic sentinel: do not convert this to pressure.
+		return -1
+	}
+
+	return counts
 }
 
 /*
