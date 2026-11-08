@@ -9,6 +9,12 @@ Example Datasheet : https://www.mouser.com/datasheet/2/187/HWSC_S_A0013047928_1-
 
 This driver was originally designed for the Raspberry pi using the wiringPi and wiringPiI2C Library and was ported to the pigpio library on 4/1/2023.
 
+## Source implementations
+
+This directory contains the C++ pigpio implementation. See the [main repository README](../../readme.md#implementations) for all language implementations.
+
+The [Go example](../../go_src/readme.md) uses `golang.org/x/exp/io/i2c` and does not require pigpio. It defaults to `/dev/i2c-1` at address `0x28`, logs the raw word and status, and prints converted mmHg from each normal-status sample. Its README includes build instructions and explains stale-data handling. These behaviors describe the Go example; they do not change the C++ driver documented below.
+
 ## Dependencies
 
 For the examples to work out of the box you will need the the following installed:

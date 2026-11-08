@@ -1,63 +1,82 @@
 # Honeywell ABPD Pressure Transducer Driver - Go Implementation
 
-This is intended to be a demo package for reading a pressure transducer easily with the go language.  
-This example required some knowlege of the go language and compiler simple reads and writes.  The eventual intent is to benchmark the performance of each of the implementations of this driver against each other and compare performance.
+Go example for the Honeywell ABPDLNN100MG2A3 0–100 mbar pressure sensor on a Raspberry Pi, using `golang.org/x/exp/io/i2c`.
 
-## Usage
+## Build and run
 
-### Example Code Usage
-- After the above are installed, you can connect the sensor to your raspberry pi on i2c bus 1.
-- Complile the code using go build. You will need to cross compile it for your particular raspberry pi hardware.
-* this was originally written for the raspberry pi zero, which uses an ARMV6 Procesor
-- Deploy the code to you raspberry pi target.
-- run example.py to read pressure from a single pressure sensor and write data out to a csv.
+Enable I²C on the Pi and ensure your user can access `/dev/i2c-1`. Connect the sensor to bus 1 at its factory address, `0x28`. Install Go compatible with the module's Go 1.19 declaration.
 
-## Class Pressure
-Full Documentation Coming Soon
+From the repository root, build and run on the Pi:
 
-### Attributes
-- address - i2c Address of the sensor - Default Address -0x28
-- minCounts - Minimum Counts (Zero Reading) for the sensor - Default Value -0x0666
-- maxCounts - Maximum Counts (Full Scale Reading) for the sensor - Default Value -0x03999
-- pMin - Minimum Pressure (Zero Reading) for the sensor - Default Value -0 mBar
-- pMin - Maximum Pressure (Full Scale Reading) for the sensor - Default Value - 100 mBar
-- bus - and smbus Object created for the i2c bus selected - default i2c Bus is 1
+```bash
+cd go_src
+go build -o pressure pressure.go && ./pressure
+```
 
-### Data Read Methods
+Build `pressure.go` explicitly: `test.go` is an unfinished legacy example with another `main()` and an unresolved `Transducer` reference, so a package-wide `go build` is not supported. The `&&` prevents running an old executable when compilation fails.
 
-The following member methods are used for reading data from the sensor.
+To cross-compile for the original Raspberry Pi Zero (ARMv6) from `go_src`:
 
-#### readCounts()
-Reads Counts from the I2C Object over the I2C bus. Reads 2 Bytes from the Data Register, but we perform and endian Swap on the two data samples with a bit shift and OR.  Raw count readings can be used to troubleshoot a faulty sensor or calibrate for an offset if needed.
+```bash
+GOOS=linux GOARCH=arm GOARM=6 go build -o pressure pressure.go
+```
 
-- Args - None
-- Returns - ADC Counts
+Copy the executable to the Pi and run `./pressure`. Use the appropriate architecture for other Pi models.
 
-#### readPressureMbar()
-Takes a Pressure Reading from the sensor object and returns the pressure reading in mBar as a floating point value.
-- Args - None
-- Returns - Pressure in mBar (Float)
+## Configuration
 
-#### readPressureMmhg()
-Takes a Pressure Reading from the sensor object and returns the pressure reading in mmHg as a floating point value.
-- Args - None
-- Returns - Pressure in mmHg (Float)
+`newSensor()` applies these defaults before opening the I²C connection:
 
-### Utility Methods
+| Setting | Default |
+| --- | --- |
+| `bus` | `1` (`/dev/i2c-1`) |
+| `address` | `0x28` |
+| `minCounts` | `0x0666` (1638) |
+| `maxCounts` | `0x3999` (14745) |
+| `pMin` | 0 mbar |
+| `pMax` | 100 mbar |
 
-Some utility methods have been provided for unit conversions for the sensor
+`initialize()` derives the device path from `sensor.bus` and uses `sensor.address`. Change the defaults or the setters in `newSensor()` before `initialize()` runs. Changing these fields after initialization does not reopen the connection.
 
-#### counts2mbar(counts)
-Converts raw sensor ADC counts to Pressure in mBar by applying the following expression:
+## Output and status handling
 
-(((counts - minCounts) * (pressureMax - pressureMin)) / (maxCounts - minCounts)) + pressureMin
+The example attempts 100 reads, waiting 100 ms after each attempt. Each read receives two bytes in one transaction, without a register-address write. It combines them in wire order, extracts the top two status bits, and masks the remaining 14 bits as pressure counts.
 
-- Args - Counts - raw sensor counts (int)
-- Returns - Pressure in mBar (float)
+Example output for a normal sample:
 
-#### mBar2mmhg(pMbar)
-Converts Pressure in mBar to mmHg with the converion ratio of 0.75
-- Args - pMbar - Pressure in mBar (float)
-- Returns - Pressure in mmHg (Float)
+```text
+Sensor Bus : 1 (/dev/i2c-1), Address : 0x28
+raw=0x0682 status=00 counts=1666
+Pressure : 0.160 mmHg
+```
 
------------------------------------------------------------
+The raw word is hexadecimal; counts are decimal; the pressure line is converted mmHg from that same sample, without a second read.
+
+| Status | Meaning | Example behavior |
+| --- | --- | --- |
+| `00` | Normal data | Convert and print pressure |
+| `01` | Command mode | Skip sample |
+| `10` | Stale data | Skip sample |
+| `11` | Diagnostic condition | Skip sample |
+
+For example, `0x867b` contains status `10` and pressure counts `0x067b` (1659). Do not interpret the status bits as pressure or accept a stale sample merely by masking them away. The loop reports the number of skipped samples at the end; it does not classify high pressure counts as communication errors. Bus-open and I²C read failures currently cause a panic.
+
+## Methods
+
+- `read_counts() int`: logs raw data, status, and counts; returns counts for normal status or `-1` otherwise.
+- `read_mbar() float32`: performs a read and returns pressure in mbar, or `NaN` for non-normal status.
+- `read_mmhg() float32`: performs a read and returns pressure in mmHg, or `NaN` for non-normal status.
+- `counts2mbar(counts int) float32`: converts valid counts using the configured calibration. Callers must reject the `-1` sentinel before using it.
+
+The conversion is:
+
+```text
+mbar = (counts - minCounts) * (pMax - pMin) / (maxCounts - minCounts) + pMin
+mmHg = mbar * 0.7500
+```
+
+Each read method takes a new sample. To express one sample in multiple units, call `read_counts()` once, check its result, and convert that result.
+
+## Hardware check
+
+A supplied Pi run with the corrected two-byte read contained 100 normal-status samples, no reported I²C errors, and counts from 1662 to 1674. This confirms that run's status decoding and read behavior; it is not a calibration or accuracy measurement. Re-run on the Pi after changes to verify the displayed bus and converted pressure.

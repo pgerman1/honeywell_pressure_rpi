@@ -17,6 +17,7 @@ Update 4/3/2023 - Python Implementation examples have been added and tested, Ful
 
 | Language | Location | Notes |
 | --- | --- | --- |
+| Go | [Documentation](go_src/readme.md) | Two-byte I²C reads with status checking, raw diagnostics, and converted mmHg output |
 | Rust | [Documentation](rust_src/readme.md) | I²C driver using RPPAL, with status checking and unit tests |
 | C++ (pigpio) | [Documentation](cpp_src/pigpio/readme.md) | Working C++ implementation; requires g++, make, and pigpio |
 | C++ (wiringPi) | [Documentation](cpp_src/wiringpi/readme.md) | Original implementation |

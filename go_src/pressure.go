@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"math"
 	"time"
 
 	"golang.org/x/exp/io/i2c"
@@ -17,13 +17,11 @@ const (
 	ADC_MIN_COUNTS = 0x0666
 	ADC_MAX_COUNTS = 0x3999
 
-	// Define Device Data Register Value
-	DATA_REG             = 0x00
+	// Default sensor configuration
 	DEFAULT_ADDR         = 0x28
 	DEFAULT_MAX_PRESSURE = 100
 	DEFAULT_MIN_PRESSURE = 0
-	DEFAULT_BUS          = 0
-	DEFAULT_DEVICE       = "/dev/i2c-0"
+	DEFAULT_BUS          = 1
 )
 
 // Class Declration
@@ -115,14 +113,10 @@ func (sensor *Pressure) set_min_pressure(myPressure int) {
 	sensor.pMin = myPressure
 }
 
-// Initialize I2C Bus, this probably needs to be broken up better
-// Need to make this so that the default bus and device can change
+// initialize opens the configured bus and address. Set both before calling it.
 func (sensor *Pressure) initialize() {
-
-	//	logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
-	//	i2cdevice, err := i2c.NewI2C(uint8(sensor.address), sensor.bus)
-
-	i2cdevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-1"}, DEFAULT_ADDR)
+	device := fmt.Sprintf("/dev/i2c-%d", sensor.bus)
+	i2cdevice, err := i2c.Open(&i2c.Devfs{Dev: device}, sensor.address)
 	if err != nil {
 		panic(err)
 	}
@@ -132,10 +126,11 @@ func (sensor *Pressure) initialize() {
 
 /*
 *************************************************
-Function readCounts()
-Descritpion: Reads the current pressure sensor data
-register.
-Returns: Presure Sensor Current ADC Counts
+Function read_counts()
+Description: Reads two bytes in wire order and logs the raw word, status,
+and 14-bit pressure counts. No register-address write is performed.
+Returns: ADC counts for normal status, or -1 for non-normal status.
+An I2C read error causes a panic.
 **************************************************
 */
 func (sensor *Pressure) read_counts() int {
@@ -165,21 +160,24 @@ func (sensor *Pressure) read_counts() int {
 Function read_mbar()
 Descritpion: Reads the current pressure sensor data
 and converts it to milibars
-Returns: Presure Sensor Pressure in Milibars (Float32)
+Returns: Pressure in millibars (float32), or NaN for non-normal status.
 **************************************************
 */
 func (sensor *Pressure) read_mbar() float32 {
 
-	return (sensor.counts2mbar(sensor.read_counts()))
+	counts := sensor.read_counts()
+	if counts < 0 {
+		return float32(math.NaN())
+	}
+	return sensor.counts2mbar(counts)
 
 }
 
 /*
 *************************************************
-Function read_mbar()
-Descritpion: Reads the current pressure sensor data
-and converts it to milibars
-Returns: Presure Sensor Pressure in Milibars (Float32)
+Function read_mmhg()
+Description: Reads pressure and converts it to mmHg.
+Returns: Pressure in mmHg (float32), or NaN for non-normal status.
 **************************************************
 */
 func (sensor *Pressure) read_mmhg() float32 {
@@ -222,17 +220,21 @@ func main() {
 
 	// Declare a Sensor Object
 	var sensor1 = newSensor()
-	fmt.Println("Sensor Bus : ", sensor1.bus)
-	var count = 0
+	defer sensor1.databus.Close()
+	fmt.Printf("Sensor Bus : %d (/dev/i2c-%d), Address : 0x%02x\n",
+		sensor1.bus, sensor1.bus, sensor1.address)
+	skipped := 0
 	for i := 0; i < 100; i++ {
-
 		dataSample := sensor1.read_counts()
-		fmt.Println("mmHg Data Read :", strconv.FormatInt(int64(dataSample), 16))
-		time.Sleep(100 * time.Millisecond)
-		if dataSample > 2000.0 {
-			count++
+		if dataSample < 0 {
+			skipped++
+			fmt.Println("Skipping sample: non-normal sensor status")
+		} else {
+			// Convert this sample without performing another sensor read.
+			mmhg := sensor1.counts2mbar(dataSample) * MMHG_MBAR_RATIO
+			fmt.Printf("Pressure : %.3f mmHg\n", mmhg)
 		}
+		time.Sleep(100 * time.Millisecond)
 	}
-	println("error count: ", count)
-	sensor1.databus.Close()
+	fmt.Printf("Skipped samples: %d\n", skipped)
 }
