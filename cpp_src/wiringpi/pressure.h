@@ -19,6 +19,9 @@
 //Include Headers
 #include<stdlib.h>
 #include<time.h>
+#include <stdexcept>
+#include <string>
+#include <cstdio>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 //#include <curses.h>
@@ -62,6 +65,7 @@ class Pressure {
 	int getFd();			  //Return Format Descriptor
 
 	//IO Reader Functions
+	// Throw std::runtime_error on I2C failure or non-normal sensor status.
 	int readCounts();         //Read Data in ADC Counts
 	float readPressure_mmhg();//Read Data in mmHg
 	float readPressure_mbar();//Read Data in mBar

@@ -18,7 +18,7 @@ using namespace std;
 Pressure sensorSetup(Pressure,int,int);
 
 
-int main(){
+int main() try {
 
 	float pmbar, pmmhg0, pmmhg1;   	 // data variables
 
@@ -36,6 +36,11 @@ int main(){
 
 	printf("----------------------------------------------\n");
 	return 0;
+}
+
+catch (const std::runtime_error& error) {
+	std::cerr << error.what() << std::endl;
+	return 1;
 }
 
 Pressure sensorSetup(Pressure mySensor, int bus, int i){

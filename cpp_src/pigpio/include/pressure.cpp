@@ -190,13 +190,26 @@ register.
 Returns: Presure Sensor Current ADC Counts
 ***************************************************/
 int Pressure::readCounts(){
-int data, adCounts;
-	data=i2cReadWordData(handle,DATA_REG);
-	/*the 2 bytes that come out of the data register are reversed(Little Endian).
-	so i flip them here by doing a bitwise AND for each byte, bitshfting them each 8 places
-	and then OR them together to get the data register in the correct order*/
-	adCounts=((data & 0x00FF) << 8) | ((data & 0xFF00) >> 8);
-	return adCounts;
+	const int data = i2cReadWordData(handle,DATA_REG);
+	if (data < 0) {
+		throw std::runtime_error("I2C pressure read failed (code " +
+		                         std::to_string(data) + ")");
+	}
+
+	// The SMBus word read returns the two sensor bytes in reverse order.
+	const unsigned raw = ((data & 0x00FF) << 8) | ((data & 0xFF00) >> 8);
+	switch (raw >> 14) {
+	case NORMAL_OPERATION:
+		return static_cast<int>(raw & 0x3FFF);
+	case COMMAND_MODE:
+		throw std::runtime_error("Pressure sensor is in command mode");
+	case STALE_DATA:
+		throw std::runtime_error("Pressure sensor returned stale data");
+	case DIAG_CONDITION:
+		throw std::runtime_error("Pressure sensor reported a diagnostic condition");
+	default:
+		throw std::runtime_error("Unknown pressure sensor status");
+	}
 }
 /**************************************************
 * Function readPressure_mmhg()

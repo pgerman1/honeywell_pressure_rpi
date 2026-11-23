@@ -22,3 +22,21 @@ Update 4/3/2023 - Python Implementation examples have been added and tested, Ful
 | C++ (pigpio) | [Documentation](cpp_src/pigpio/readme.md) | Working C++ implementation; requires g++, make, and pigpio |
 | C++ (wiringPi) | [Documentation](cpp_src/wiringpi/readme.md) | Original implementation |
 | Python | [Documentation](python_src/readme.md) | Limited implementation for prototyping |
+
+## C++ error handling and handle ownership
+
+The C++ drivers now include these fixes:
+
+- **Read failures:** Both pigpio and wiringPi check negative I²C read results before decoding. Failed reads throw `std::runtime_error` instead of being converted into pressure values.
+- **Sensor status:** Both drivers check the upper two status bits and return only the lower 14 pressure bits for normal samples. Command mode, stale data, and diagnostic conditions throw `std::runtime_error` with a descriptive message. There is no automatic retry.
+- **pigpio handle ownership:** `Pressure` objects cannot be copied or moved, preventing multiple objects from closing the same handle. Pass an existing sensor by reference; the pigpio example helpers now do this.
+
+The signatures of `readCounts()`, `readPressure_mbar()`, and `readPressure_mmhg()` are unchanged, but callers must now handle exceptions. The examples print the error and exit with a nonzero status. Applications can catch `std::runtime_error` around a read and decide whether to stop or retry; failed samples must not be used as measurements. C++11 or newer is required and is selected by the example makefiles.
+
+Run the hardware-independent regression checks with:
+
+```sh
+make -C cpp_src/tests test
+```
+
+These checks use stubbed I²C calls and UndefinedBehaviorSanitizer to cover normal counts, read failures, all non-normal statuses, pressure-method error propagation, and pigpio ownership. They also compile-check the examples. Raspberry Pi hardware validation is still required. Initialization validation, wiringPi descriptor cleanup, custom-range overflow, and changing the SMBus reads to direct I²C reads remain follow-up work.

@@ -20,6 +20,9 @@
 //Include Headers
 #include<stdlib.h>
 #include<time.h>
+#include <stdexcept>
+#include <string>
+#include <cstdio>
 #include<pigpio.h>
 
 //Definitions
@@ -58,6 +61,12 @@ class Pressure {
 	//Destructor
 	~Pressure();
 
+	// Each object exclusively owns its I2C handle.
+	Pressure(const Pressure&) = delete;
+	Pressure& operator=(const Pressure&) = delete;
+	Pressure(Pressure&&) = delete;
+	Pressure& operator=(Pressure&&) = delete;
+
 	//Getter Functions
 	unsigned getAddress();         //return I2C Address 
 	unsigned getBus();        	  //return I2C Bus Number 
@@ -68,6 +77,7 @@ class Pressure {
 	unsigned getHandle();			  //Return Format Descriptor
 
 	//IO Reader Functions
+	// Throw std::runtime_error on I2C failure or non-normal sensor status.
 	int readCounts();         //Read Data in ADC Counts
 	float readPressure_mmhg();//Read Data in mmHg
 	float readPressure_mbar();//Read Data in mBar
