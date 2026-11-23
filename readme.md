@@ -13,6 +13,8 @@ Update 4/1/2023 - Wiring pi library is deprecated by its owner, so the API has b
 
 Update 4/3/2023 - Python Implementation examples have been added and tested, Full Documentation Coming Soon.
 
+Update 11/8/2026 - Go and Rust Implementation examples have been added and tested.
+
 ## Implementations
 
 | Language | Location | Notes |
