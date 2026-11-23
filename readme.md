@@ -31,9 +31,11 @@ The C++ drivers now include these fixes:
 
 - **Read failures:** Both pigpio and wiringPi check negative I²C read results before decoding. Failed reads throw `std::runtime_error` instead of being converted into pressure values.
 - **Sensor status:** Both drivers check the upper two status bits and return only the lower 14 pressure bits for normal samples. Command mode, stale data, and diagnostic conditions throw `std::runtime_error` with a descriptive message. There is no automatic retry.
-- **pigpio handle ownership:** `Pressure` objects cannot be copied or moved, preventing multiple objects from closing the same handle. Pass an existing sensor by reference; the pigpio example helpers now do this.
+- **Handle ownership and cleanup:** Both backends' `Pressure` objects cannot be copied or moved. Each object closes its successfully opened resource on destruction, including exception unwinding. Pass sensors by reference; all example helpers now do this. `getHandle()` and `getFd()` expose borrowed identifiers: callers must not close them.
+- **Initialization validation:** Constructors reject buses other than 0 or 1, addresses outside the non-reserved 7-bit range `0x08`–`0x77`, and pressure spans whose minimum is not less than the maximum. Invalid configuration throws `std::invalid_argument` before opening the device. Negative open results throw `std::runtime_error` (a `std::system_error` preserving `errno` for wiringPi). Internal resource identifiers start at `-1`; failed opens are never stored as unsigned handles or closed.
+- **Pressure-range arithmetic:** Conversion promotes operands to `double` before subtracting the pressure endpoints, preventing signed integer overflow even for an `INT_MIN`–`INT_MAX` span. Negative pressure ranges remain supported; the public return type is still `float`.
 
-The signatures of `readCounts()`, `readPressure_mbar()`, and `readPressure_mmhg()` are unchanged, but callers must now handle exceptions. The examples print the error and exit with a nonzero status. Applications can catch `std::runtime_error` around a read and decide whether to stop or retry; failed samples must not be used as measurements. C++11 or newer is required and is selected by the example makefiles.
+The signatures of `readCounts()`, `readPressure_mbar()`, and `readPressure_mmhg()` are unchanged, but callers must now handle exceptions. The examples catch `std::exception` for both configuration and runtime failures, print the error and exit with a nonzero status. Applications can catch `std::runtime_error` around a read and decide whether to stop or retry; failed samples must not be used as measurements. C++11 or newer is required and is selected by the example makefiles.
 
 Run the hardware-independent regression checks with:
 
@@ -41,4 +43,4 @@ Run the hardware-independent regression checks with:
 make -C cpp_src/tests test
 ```
 
-These checks use stubbed I²C calls and UndefinedBehaviorSanitizer to cover normal counts, read failures, all non-normal statuses, pressure-method error propagation, and pigpio ownership. They also compile-check the examples. Raspberry Pi hardware validation is still required. Initialization validation, wiringPi descriptor cleanup, custom-range overflow, and changing the SMBus reads to direct I²C reads remain follow-up work.
+These checks use stubbed I²C calls and UndefinedBehaviorSanitizer to cover normal counts, read failures, all non-normal statuses, pressure-method error propagation, ownership and cleanup for both backends, initialization failures, invalid configuration, and extreme pressure ranges. They also compile-check the examples. Raspberry Pi hardware validation is still required. Changing the SMBus reads to direct I²C reads remains follow-up work.

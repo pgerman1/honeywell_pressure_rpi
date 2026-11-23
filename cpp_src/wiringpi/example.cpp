@@ -15,7 +15,7 @@ using namespace std;
 #include "pressure.h"
 
 
-Pressure sensorSetup(Pressure);
+void sensorSetup(Pressure&);
 
 int main() try {
 
@@ -38,12 +38,12 @@ int main() try {
 	return 0;
 }
 
-catch (const std::runtime_error& error) {
+catch (const std::exception& error) {
 	std::cerr << error.what() << std::endl;
 	return 1;
 }
 
-Pressure sensorSetup(Pressure mySensor){
+void sensorSetup(Pressure& mySensor){
 	printf("----------------------------------------------\n");
 	printf("Pressure Transducer Bus is:\t\t %d \n",mySensor.getBus());
 	printf("Pressure Transducer Address is:\t\t %d \n",mySensor.getAddress());
@@ -52,5 +52,5 @@ Pressure sensorSetup(Pressure mySensor){
 	printf("Pressure Transducer min mBar is:\t %d \n",mySensor.getPressureMin());
 	printf("Pressure Transducer max mBar is:\t %d \n",mySensor.getPressureMax());
 	printf("----------------------------------------------\n");
-return mySensor;
+
 };

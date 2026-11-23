@@ -92,11 +92,11 @@ Args: counts - Transducer ADC Counts
 Returns: pressure - Pressure in Milibars
 ***************************************************/
 float Pressure::counts2mbar(int counts){
-
-	float myPressure;
-
-	myPressure=((((float)counts-countsmin)*(pmax-pmin))/((float)countsmax-(float)countsmin))+pmin;
-	return myPressure;
+	// Promote before subtraction: even a valid signed pressure span may
+	// exceed the range of int (for example INT_MIN through INT_MAX).
+	const double span = static_cast<double>(pmax) - static_cast<double>(pmin);
+	return static_cast<float>(((static_cast<double>(counts) - countsmin) * span /
+	                          (static_cast<double>(countsmax) - countsmin)) + pmin);
 }
 /**************************************************
 * Function counts2mmhg()
@@ -128,6 +128,9 @@ Args: myAddress - I2C Address
 Returns: None
 ***************************************************/
 void Pressure::setAddress(int myAddress){
+	if (myAddress < 0x08 || myAddress > 0x77) {
+		throw std::invalid_argument("I2C address must be a non-reserved 7-bit address (0x08-0x77)");
+	}
 	address=myAddress;
 }
 /**************************************************
@@ -137,6 +140,9 @@ Args: myBus - I2C Bus
 Returns: None
 ***************************************************/
 void Pressure::setBus(int myBus){
+	if (myBus != 0 && myBus != 1) {
+		throw std::invalid_argument("I2C bus must be 0 or 1");
+	}
 	bus=myBus;
 }
 /**************************************************
@@ -147,6 +153,9 @@ Args: min - Min Value
 Returns: None
 ***************************************************/
 void Pressure::setSpan(int min, int max){
+	if (min >= max) {
+		throw std::invalid_argument("Minimum pressure must be less than maximum pressure");
+	}
 	pmin=min;
 	pmax=max;
 }
@@ -158,17 +167,20 @@ Args: fd - format desciriptor integer
 Returns: None
 ***************************************************/
 void Pressure::setFd(){
+	const char* device = bus == 0 ? "/dev/i2c-0" : "/dev/i2c-1";
+	const int opened = wiringPiI2CSetupInterface(device, address);
+	if (opened < 0) {
+		const int error = errno;
+		throw std::system_error(error, std::generic_category(), "I2C pressure open failed");
+	}
+	fd = opened;
+}
 
-	if(bus==0){
-	fd = wiringPiI2CSetupInterface("/dev/i2c-0", address);
+Pressure::~Pressure(){
+	if (fd >= 0) {
+		// Do not retry close: the descriptor may already have been released.
+		::close(fd);
 	}
-	else if (bus==1){
-	fd = wiringPiI2CSetupInterface("/dev/i2c-1", address);
-	}
-	else{
-		printf("ERROR - I2C Bus Not 0 or 1");
-	}
-
 }
 /**************************************************
 * Function getFd()
@@ -277,7 +289,6 @@ register and performs the ADC to mmHg conversion.
 Returns: Presure Sensor Current Value in mmHg
 ***************************************************/
 float Pressure::readPressure_mmhg(){
-int data;
 	return (counts2mmhg(readCounts()));
 }
 /**************************************************

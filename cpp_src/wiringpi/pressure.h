@@ -22,6 +22,9 @@
 #include <stdexcept>
 #include <string>
 #include <cstdio>
+#include <cerrno>
+#include <system_error>
+#include <unistd.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 //#include <curses.h>
@@ -49,12 +52,22 @@ class Pressure {
   	// Public Member Functions
 
 	//Constructors
+	// Invalid configuration throws std::invalid_argument; open failures throw
+	// std::runtime_error (std::system_error for wiringPi).
 	Pressure();		  //base constructor
 	Pressure(int);		  //Constructor, Setting Bus
 	Pressure(int,int);	  //Constructor, Setting Bus And Address
 	Pressure(int,int,int,int);	  //Constructor, Setting Bus And Address, 
 									//Min/Max Pressure Range
 	
+	~Pressure();
+
+	// Each object exclusively owns its I2C descriptor.
+	Pressure(const Pressure&) = delete;
+	Pressure& operator=(const Pressure&) = delete;
+	Pressure(Pressure&&) = delete;
+	Pressure& operator=(Pressure&&) = delete;
+
 	//Getter Functions
 	int getAddress();         //return I2C Address 
 	int getBus();        	  //return I2C Bus Number 
@@ -85,7 +98,7 @@ class Pressure {
   	int pmax;      // Max Pressure (mBar)
   	int address;   // I2C address of the Transducer IC
   	int bus;       // I2C Bus of the Transducer
-  	int fd;	       // Transducer Format Descriptor
+	int fd = -1;	       // Transducer Format Descriptor
 
   // Private Member Functions - Setters for Setup
 	void setCounts(int,int);  //set min and max counts

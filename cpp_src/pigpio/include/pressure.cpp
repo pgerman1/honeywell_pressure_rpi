@@ -93,11 +93,11 @@ Args: counts - Transducer ADC Counts
 Returns: pressure - Pressure in Milibars
 ***************************************************/
 float Pressure::counts2mbar(int counts){
-
-float myPressure;
-
-myPressure=((((float)counts-countsmin)*(pmax-pmin))/((float)countsmax-(float)countsmin))+pmin;
-	return myPressure;
+	// Promote before subtraction: even a valid signed pressure span may
+	// exceed the range of int (for example INT_MIN through INT_MAX).
+	const double span = static_cast<double>(pmax) - static_cast<double>(pmin);
+	return static_cast<float>(((static_cast<double>(counts) - countsmin) * span /
+	                          (static_cast<double>(countsmax) - countsmin)) + pmin);
 }
 /**************************************************
 * Function counts2mmhg()
@@ -129,6 +129,9 @@ Args: myAddress - I2C Address
 Returns: None
 ***************************************************/
 void Pressure::setAddress(unsigned myAddress){
+	if (myAddress < 0x08 || myAddress > 0x77) {
+		throw std::invalid_argument("I2C address must be a non-reserved 7-bit address (0x08-0x77)");
+	}
 	address=myAddress;
 }
 /**************************************************
@@ -138,6 +141,9 @@ Args: myBus - I2C Bus
 Returns: None
 ***************************************************/
 void Pressure::setBus(unsigned myBus){
+	if (myBus != 0 && myBus != 1) {
+		throw std::invalid_argument("I2C bus must be 0 or 1");
+	}
 	bus=myBus;
 }
 /**************************************************
@@ -148,6 +154,9 @@ Args: min - Min Value
 Returns: None
 ***************************************************/
 void Pressure::setSpan(int min, int max){
+	if (min >= max) {
+		throw std::invalid_argument("Minimum pressure must be less than maximum pressure");
+	}
 	pmin=min;
 	pmax=max;
 }
@@ -169,7 +178,12 @@ Args: handle - format desciriptor integer
 Returns: None
 ***************************************************/
 void Pressure::setHandle(){
-	handle = i2cOpen(bus,address,0);  // Third Arg hard set to 0, no i2c Flags
+	const int opened = i2cOpen(bus,address,0);
+	if (opened < 0) {
+		throw std::runtime_error("I2C pressure open failed (code " +
+		                         std::to_string(opened) + ")");
+	}
+	handle = opened;
 }
 /**************************************************
 * Function setCounts()
@@ -300,5 +314,7 @@ Args : none
 Returns: None
 ***************************************************/
 Pressure::~Pressure(){
-	i2cClose(getHandle());  // Close the I2C Bus for the objects Handle.
+	if (handle >= 0) {
+		i2cClose(static_cast<unsigned>(handle));
+	}
 }

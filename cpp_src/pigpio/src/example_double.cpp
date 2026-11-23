@@ -43,7 +43,7 @@ int main() try {
 	return 0;
 }
 
-catch (const std::runtime_error& error) {
+catch (const std::exception& error) {
 	std::cerr << error.what() << std::endl;
 	return 1;
 }

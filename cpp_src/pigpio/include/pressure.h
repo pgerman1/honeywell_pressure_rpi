@@ -53,6 +53,8 @@ class Pressure {
   	// Public Member Functions
 
 	//Constructors
+	// Invalid configuration throws std::invalid_argument; open failures throw
+	// std::runtime_error (std::system_error for wiringPi).
 	Pressure();		  						  //base constructor
 	Pressure(unsigned);		  		  		  //Constructor, Setting Bus
 	Pressure(unsigned,unsigned);	  		  //Constructor, Setting Bus And Address
@@ -97,7 +99,7 @@ class Pressure {
   	int pmax;      // Max Pressure (mBar)
   	unsigned address;   // I2C address of the Transducer IC
   	unsigned bus;       // I2C Bus of the Transducer
-  	unsigned handle;	   // Transducer Format Descriptor
+	int handle = -1;	   // Transducer Format Descriptor
 
   // Private Member Functions - Setters for Setup
 	void setCounts(int,int);  //set min and max counts
