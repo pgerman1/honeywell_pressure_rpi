@@ -37,7 +37,7 @@ A hardware run on the development Pi successfully produced:
 Pressure: 0.214 mbar
 ```
 
-This demonstrates a successful read, not a calibration or accuracy measurement. The current example attempts ten consecutive readings without a delay and exits on the first error, including stale data. It does not yet implement polling delays or retries.
+This demonstrates a successful read, not a calibration or accuracy measurement. The example takes ten readings with a 100 ms delay between them (approximately 10 Hz), allowing the sensor to produce fresh data. The first reading is immediate. It exits on the first error, including stale data, and does not retry failed reads.
 
 ## Library usage
 
@@ -74,4 +74,4 @@ cargo test --locked
 cross build --locked --release --target aarch64-unknown-linux-gnu --example read_pressure
 ```
 
-Copy `target/aarch64-unknown-linux-gnu/release/examples/read_pressure` to the Pi and run it with `./read_pressure`. Rust is not required on the Pi to run the compiled executable. The target system libraries must also be compatible with the build environment. Cross-compilation has not yet been verified on the development hardware.
+Copy `target/aarch64-unknown-linux-gnu/release/examples/read_pressure` to the Pi and run it with `./read_pressure`. Rust is not required on the Pi to run the compiled executable. The target system libraries must also be compatible with the build environment. The ARMv7 build was verified on `campi.home` using a Bookworm cross-compilation container on `build-server.home`: five runs of the 100 ms example each returned all ten ambient readings without errors. The AArch64 command above has not been hardware-verified.
